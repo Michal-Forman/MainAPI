@@ -2,9 +2,9 @@
 import "dotenv/config";
 import { getUmbrellaNeed, getSunscreenNeed, getOutdoorActivities, getOutfit, } from "./functions.js";
 export const getData = (req, res) => {
-    const cords = req.params.cords;
-    // console.log(cords);
-    const link = `https://api.tomorrow.io/v4/weather/forecast?location=${cords}&apikey=${process.env.TOMORROW_API_KEY}`;
+    const coords = req.params.coords;
+    // console.log(coords);
+    const link = `https://api.tomorrow.io/v4/weather/forecast?location=${coords}&apikey=${process.env.TOMORROW_API_KEY}`;
     fetch(link)
         .then((response) => {
         if (!response.ok) {
@@ -18,6 +18,7 @@ export const getData = (req, res) => {
             sunscreenNeed: undefined,
             outdoorActivities: undefined,
             outfit: undefined,
+            coords: coords,
         };
         // Umbrella
         let umbrellaNeed = getUmbrellaNeed(data.timelines.hourly);
@@ -37,5 +38,17 @@ export const getData = (req, res) => {
         // Handle errors
         console.error("Fetch error:", error);
     });
+};
+export const getTestingData = (req, res) => {
+    const defaultCoords = "undefined";
+    const coords = req.params.coords || defaultCoords;
+    const weatherData = {
+        umbrellaNeed: 0.2,
+        sunscreenNeed: 0.4,
+        outdoorActivities: 0.6,
+        outfit: 0.8,
+        coords: coords,
+    };
+    res.send(weatherData);
 };
 //# sourceMappingURL=controller.js.map

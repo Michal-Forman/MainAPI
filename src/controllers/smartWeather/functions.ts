@@ -24,7 +24,6 @@ function getUmbrellaNeed(hourlyData: HourlyData[]): number {
     throw new Error("Could not find first hour index");
   }
   const now = new Date().getUTCHours() + 1;
-  console.log(now);
   const hoursNeeded = 18 - now;
   for (
     let i: number = firstHourIndex;

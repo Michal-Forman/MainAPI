@@ -19,7 +19,6 @@ function getUmbrellaNeed(hourlyData) {
         throw new Error("Could not find first hour index");
     }
     const now = new Date().getUTCHours() + 1;
-    console.log(now);
     const hoursNeeded = 18 - now;
     for (let i = firstHourIndex; i < hoursNeeded + firstHourIndex + 1; i++) {
         if (hourlyData[i].values.rainIntensity > highestRainIntensity) {

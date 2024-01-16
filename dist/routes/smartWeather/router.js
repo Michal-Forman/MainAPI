@@ -1,6 +1,7 @@
 import express from "express";
-import { getData } from "../../controllers/smartWeather/controller.js";
+import { getData, getTestingData, } from "../../controllers/smartWeather/controller.js";
 const router = express.Router();
-router.get("/:cords", getData);
+router.get("/production/:coords", getData);
+router.get("/testing/:coords?", getTestingData);
 export default router;
 //# sourceMappingURL=router.js.map

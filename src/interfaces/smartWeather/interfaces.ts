@@ -12,3 +12,7 @@ export interface WeatherData {
   outdoorActivities: number | undefined;
   outfit: number | undefined;
 }
+
+export interface TestingWeatherData extends WeatherData {
+  coords: string | undefined;
+}

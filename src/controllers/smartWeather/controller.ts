@@ -3,7 +3,10 @@ import "dotenv/config";
 import { Request, Response } from "express";
 
 // Custom imports
-import { WeatherData } from "../../interfaces/smartWeather/interfaces.js";
+import {
+  WeatherData,
+  TestingWeatherData,
+} from "../../interfaces/smartWeather/interfaces.js";
 import {
   getUmbrellaNeed,
   getSunscreenNeed,
@@ -12,9 +15,9 @@ import {
 } from "./functions.js";
 
 export const getData = (req: Request, res: Response) => {
-  const cords = req.params.cords;
-  // console.log(cords);
-  const link = `https://api.tomorrow.io/v4/weather/forecast?location=${cords}&apikey=${process.env.TOMORROW_API_KEY}`;
+  const coords = req.params.coords;
+  // console.log(coords);
+  const link = `https://api.tomorrow.io/v4/weather/forecast?location=${coords}&apikey=${process.env.TOMORROW_API_KEY}`;
   fetch(link)
     .then((response) => {
       if (!response.ok) {
@@ -23,11 +26,12 @@ export const getData = (req: Request, res: Response) => {
       return response.json();
     })
     .then((data) => {
-      let weatherData: WeatherData = {
+      let weatherData: TestingWeatherData = {
         umbrellaNeed: undefined,
         sunscreenNeed: undefined,
         outdoorActivities: undefined,
         outfit: undefined,
+        coords: coords,
       };
 
       // Umbrella
@@ -56,4 +60,18 @@ export const getData = (req: Request, res: Response) => {
       // Handle errors
       console.error("Fetch error:", error);
     });
+};
+
+export const getTestingData = (req: Request, res: Response) => {
+  const defaultCoords = "undefined";
+  const coords = req.params.coords || defaultCoords;
+
+  const weatherData: TestingWeatherData = {
+    umbrellaNeed: 0.2,
+    sunscreenNeed: 0.4,
+    outdoorActivities: 0.6,
+    outfit: 0.8,
+    coords: coords,
+  };
+  res.send(weatherData);
 };
