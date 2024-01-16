@@ -26,12 +26,11 @@ export const getData = (req: Request, res: Response) => {
       return response.json();
     })
     .then((data) => {
-      let weatherData: TestingWeatherData = {
+      let weatherData: WeatherData = {
         umbrellaNeed: undefined,
         sunscreenNeed: undefined,
         outdoorActivities: undefined,
         outfit: undefined,
-        coords: coords,
       };
 
       // Umbrella

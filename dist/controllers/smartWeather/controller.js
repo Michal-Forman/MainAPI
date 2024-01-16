@@ -18,7 +18,6 @@ export const getData = (req, res) => {
             sunscreenNeed: undefined,
             outdoorActivities: undefined,
             outfit: undefined,
-            coords: coords,
         };
         // Umbrella
         let umbrellaNeed = getUmbrellaNeed(data.timelines.hourly);
