@@ -15,7 +15,17 @@ Technologies used in the project:
 
 <h2>🛡️ License:</h2>
 
-This project is licensed under the MIT
+This project is licensed under the MIT License
+
+<h2>👾 Projects</h2>
+This project Main API already includes routes for these projects:
+
+- Smart weather
+
+<h2>📡 Hosting</h2>
+This project is hosted on render.com
+
+- [https://main-api-0xrx.onrender.com](https://main-api-0xrx.onrender.com)
 
 <h2>📞 Contact</h2>
 
