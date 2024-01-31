@@ -5,6 +5,7 @@ function getSunscreenNeed(uvIndex: number): number {
 }
 
 function getUmbrellaNeed(hourlyData: HourlyData[]): number {
+  // Finds the highest rain intensity in hours from now to 18:00 UTC + 1
   let firstHourIndex: number | undefined;
   let highestRainIntensity = 0;
 
@@ -25,17 +26,16 @@ function getUmbrellaNeed(hourlyData: HourlyData[]): number {
   }
   const now = new Date().getUTCHours() + 1;
   const hoursNeeded = 18 - now;
-  for (
-    let i: number = firstHourIndex;
-    i < hoursNeeded + firstHourIndex + 1;
-    i++
-  ) {
+  // Handle edge case where it's past 18:00 UTC + 1
+  if (hoursNeeded <= 0) {
+    return -1;
+  }
+  for (let i: number = firstHourIndex; i < hoursNeeded + firstHourIndex; i++) {
     if (hourlyData[i].values.rainIntensity > highestRainIntensity) {
       highestRainIntensity = hourlyData[i].values.rainIntensity;
     }
   }
 
-  // console.log("Highest rain intensity:", highestRainIntensity);
   return 1 / (1 + 2 ** (-highestRainIntensity + 2));
 }
 
@@ -59,9 +59,18 @@ function getOutdoorActivities(hourlyData: HourlyData[]): number {
   if (firstHourIndex === undefined) {
     throw new Error("Could not find first hour index");
   }
-  // get the average rain intensity for the next 16 hours
+  // get the average rain intensity from now to 18:00 UTC + 1
   let rainIntensitiesSum: number = 0;
-  for (let i = firstHourIndex; i < 17 + firstHourIndex; i++) {
+
+  const now = new Date().getUTCHours() + 1;
+  const hoursNeeded = 18 - now;
+
+  // Handle edge case where it's past 18:00 UTC + 1
+  if (hoursNeeded <= 0) {
+    return -1;
+  }
+
+  for (let i = firstHourIndex; i < hoursNeeded + firstHourIndex; i++) {
     rainIntensitiesSum += hourlyData[i].values.rainIntensity;
   }
   const rainIntensity: number = rainIntensitiesSum / 16;
