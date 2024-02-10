@@ -88,7 +88,7 @@ export const logFood = async (req: Request, res: Response) => {
         {
           role: "system",
           content:
-            "You only respond with JSON which includes those 5 parameters: foodName, calories, protein, carbs and fat for the inputed food. Use the most probable values Dont include anything else in the response",
+            "You only respond with JSON which includes those 5 parameters: foodName, calories, protein, carbs and fat for the inputed food. Without suffix! Use the most probable values Dont include anything else in the response",
         },
         { role: "user", content: food },
       ],
