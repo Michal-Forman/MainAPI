@@ -2,8 +2,11 @@
 import "dotenv/config";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import OpenAI from "openai";
 // Custom imports
-import { User } from "../../models/smartDietTracker/models.js";
+import { User, Food } from "../../models/smartDietTracker/models.js";
+// Constants
+const openai = new OpenAI(process.env.SMART_DIET_TRACKER_OPENAI_API_KEY);
 export const createUser = async (req, res) => {
     // Register the user
     try {
@@ -58,6 +61,77 @@ export const loginUser = async (req, res) => {
     }
     catch (error) {
         return res.status(500).send("Error in user login");
+    }
+};
+export const logFood = async (req, res) => {
+    try {
+        console.log("user", req.user);
+        const { food } = req.body;
+        const completion = await openai.chat.completions.create({
+            messages: [
+                {
+                    role: "system",
+                    content: "You only respond with JSON which includes those 5 parameters: foodName, calories, protein, carbs and fat for the inputed food. Use the most probable values Dont include anything else in the response",
+                },
+                { role: "user", content: food },
+            ],
+            max_tokens: 100,
+            model: "gpt-3.5-turbo",
+        });
+        console.log(completion);
+        try {
+            console.log("generated message:", completion.choices[0].message.content);
+            const { foodName, calories, protein, carbs, fat } = JSON.parse(completion.choices[0].message.content);
+            console.log(calories, protein, carbs, fat);
+            const foodItem = new Food({
+                user: req.user._id,
+                name: foodName,
+                calories,
+                protein,
+                carbs,
+                fat,
+            });
+            await foodItem.save();
+            const { user, ...data } = foodItem.toObject();
+            return res.status(201).json({ data });
+        }
+        catch (error) {
+            return res.status(500).send("Error in getting the macros");
+        }
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).send("Error in loggin the food");
+    }
+};
+export const getTodaysFood = async (req, res) => {
+    try {
+        // Get today's date at midnight in UTC
+        const todayStart = new Date();
+        todayStart.setUTCHours(0, 0, 0, 0);
+        // Get tomorrow's date at midnight in UTC (end of today)
+        const todayEnd = new Date(todayStart);
+        todayEnd.setUTCDate(todayStart.getUTCDate() + 1);
+        // Get the food items created today
+        const foodItems = await Food.find({
+            user: req.user._id,
+            time: { $gte: todayStart.toISOString(), $lt: todayEnd.toISOString() },
+        });
+        // Get totals
+        const totals = foodItems.reduce((acc, item) => {
+            acc.calories += Math.round(item.calories);
+            acc.protein += Math.round(item.protein);
+            acc.carbs += Math.round(item.carbs);
+            acc.fat += Math.round(item.fat);
+            return acc;
+        }, { calories: 0, protein: 0, carbs: 0, fat: 0 });
+        console.log("totals", totals);
+        console.log(foodItems);
+        return res.status(200).json({ totals });
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).send("Error in getting today's food");
     }
 };
 //# sourceMappingURL=controller.js.map

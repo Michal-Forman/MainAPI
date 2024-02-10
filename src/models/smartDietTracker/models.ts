@@ -8,3 +8,15 @@ const userSchema = new mongoose.Schema({
 });
 
 export const User = mongoose.model("User", userSchema);
+
+const foodSchema = new mongoose.Schema({
+  user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  name: { type: String, required: true },
+  time: { type: Date, default: Date.now },
+  calories: { type: Number, required: true },
+  protein: { type: Number, required: true },
+  carbs: { type: Number, required: true },
+  fat: { type: Number, required: true },
+});
+
+export const Food = mongoose.model("Food", foodSchema);
