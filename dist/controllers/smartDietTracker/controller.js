@@ -81,7 +81,12 @@ export const logFood = async (req, res) => {
         console.log(completion);
         try {
             console.log("generated message:", completion.choices[0].message.content);
-            const { foodName, calories, protein, carbs, fat } = JSON.parse(completion.choices[0].message.content);
+            let { foodName, calories, protein, carbs, fat } = JSON.parse(completion.choices[0].message.content);
+            // Round the values
+            calories = Math.round(calories);
+            protein = Math.round(protein);
+            carbs = Math.round(carbs);
+            fat = Math.round(fat);
             console.log(calories, protein, carbs, fat);
             const foodItem = new Food({
                 user: req.user._id,
