@@ -78,7 +78,18 @@ export const logFood = async (req, res) => {
             max_tokens: 100,
             model: "gpt-3.5-turbo",
         });
-        console.log(completion);
+        const price = completion.usage.prompt_tokens * 0.0000005 +
+            completion.usage.completion_tokens * 0.0000015;
+        console.log("price:", price);
+        try {
+            await User.findByIdAndUpdate(req.user._id, {
+                $inc: { openAICost: price },
+            }, { new: true });
+            console.log("updated user's openAI usage");
+        }
+        catch (error) {
+            console.log("Error in updating the user's openAI usage");
+        }
         try {
             console.log("generated message:", completion.choices[0].message.content);
             let { foodName, calories, protein, carbs, fat } = JSON.parse(completion.choices[0].message.content);
