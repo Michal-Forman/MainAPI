@@ -65,7 +65,6 @@ export const loginUser = async (req, res) => {
 };
 export const logFood = async (req, res) => {
     try {
-        console.log("user", req.user);
         const { food } = req.body;
         const completion = await openai.chat.completions.create({
             messages: [
@@ -85,7 +84,6 @@ export const logFood = async (req, res) => {
             await User.findByIdAndUpdate(req.user._id, {
                 $inc: { openAICost: price },
             }, { new: true });
-            console.log("updated user's openAI usage");
         }
         catch (error) {
             console.log("Error in updating the user's openAI usage");
@@ -98,7 +96,6 @@ export const logFood = async (req, res) => {
             protein = Math.round(protein);
             carbs = Math.round(carbs);
             fat = Math.round(fat);
-            console.log(calories, protein, carbs, fat);
             const foodItem = new Food({
                 user: req.user._id,
                 name: foodName,
@@ -141,13 +138,38 @@ export const getTodaysFood = async (req, res) => {
             acc.fat += Math.round(item.fat);
             return acc;
         }, { calories: 0, protein: 0, carbs: 0, fat: 0 });
-        console.log("totals", totals);
-        console.log(foodItems);
         return res.status(200).json({ totals });
     }
     catch (error) {
         console.log(error);
         return res.status(500).send("Error in getting today's food");
+    }
+};
+export const getAllFood = async (req, res) => {
+    try {
+        let foodItems = await Food.find({ user: req.user._id }).lean();
+        foodItems.forEach((item) => {
+            delete item.user;
+        });
+        return res.status(200).json({ foodItems });
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).send("Error in getting all food");
+    }
+};
+export const deleteFood = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const foodItem = await Food.findByIdAndDelete(id);
+        if (!foodItem) {
+            return res.status(404).send("Food not found");
+        }
+        return res.status(200).send("Food deleted");
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).send("Error in deleting the food");
     }
 };
 //# sourceMappingURL=controller.js.map

@@ -7,6 +7,8 @@ import {
   loginUser,
   logFood,
   getTodaysFood,
+  getAllFood,
+  deleteFood,
 } from "../../controllers/smartDietTracker/controller.js";
 
 const router = express.Router();
@@ -14,6 +16,8 @@ const router = express.Router();
 router.post("/register", createUser);
 router.post("/login", loginUser);
 router.post("/food", verifyToken, logFood);
-router.get("/food", verifyToken, getTodaysFood);
+router.get("/food", verifyToken, getAllFood);
+router.delete("/food/:id", verifyToken, deleteFood);
+router.get("/todays-food", verifyToken, getTodaysFood);
 
 export default router;
