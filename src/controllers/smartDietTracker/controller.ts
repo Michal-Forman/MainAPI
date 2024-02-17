@@ -91,7 +91,7 @@ export const logFood = async (req: Request, res: Response) => {
         { role: "user", content: food },
       ],
       max_tokens: 100,
-      model: "gpt-3.5-turbo",
+      model: "gpt-4",
     });
     const price =
       completion.usage.prompt_tokens * 0.0000005 +
