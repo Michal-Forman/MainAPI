@@ -86,7 +86,7 @@ export const logFood = async (req: Request, res: Response) => {
         {
           role: "system",
           content:
-            "You only respond with JSON which includes those 5 parameters: foodName, calories, protein, carbs and fat for the inputed food. Without suffix! The name should be only one word. Use the most probable values Dont include anything else in the response",
+            "You only respond with JSON which includes those 5 parameters: foodName, calories, protein, carbs and fat for the inputed food. Without suffix! The name should be as short as possible max 2 words. Use the most probable values Dont include anything else in the response",
         },
         { role: "user", content: food },
       ],
@@ -199,5 +199,22 @@ export const deleteFood = async (req: Request, res: Response) => {
   } catch (error) {
     console.log(error);
     return res.status(500).send("Error in deleting the food");
+  }
+};
+
+export const changeFood = async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id;
+    const newData = req.body;
+    const foodItem = await Food.findByIdAndUpdate(id, newData, { new: true });
+
+    if (!foodItem) {
+      return res.status(404).send("Food not found");
+    }
+
+    return res.status(200).json({ foodItem });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send("Error in changing the food");
   }
 };
