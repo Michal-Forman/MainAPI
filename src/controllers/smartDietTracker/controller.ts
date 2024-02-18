@@ -81,22 +81,22 @@ export const loginUser = async (req: Request, res: Response) => {
 export const logFood = async (req: Request, res: Response) => {
   try {
     const { food } = req.body;
+    const bias = "upper";
     const completion = await openai.chat.completions.create({
       messages: [
         {
-          role: "system",
-          content:
-            "You only respond with JSON which includes those 5 parameters: foodName, calories, protein, carbs and fat for the inputed food. Without suffix! The name should be as short as possible max 2 words. Use the most probable values Dont include anything else in the response",
+          role: "user",
+          content: `Give me calories, protein, carbs and fat for this food: ${food}. Your response should be a JSON in this format: {foodName, calories, protein, carbs, fat}. All the values must be integers, so dont use any suffix or something. Also the food name should be as short as possible`,
         },
-        { role: "user", content: food },
       ],
       max_tokens: 100,
-      model: "gpt-4",
+      model: "gpt-3.5-turbo-0125",
     });
     const price =
       completion.usage.prompt_tokens * 0.0000005 +
       completion.usage.completion_tokens * 0.0000015;
     console.log("price:", price);
+
     try {
       await User.findByIdAndUpdate(
         req.user._id,
@@ -111,9 +111,17 @@ export const logFood = async (req: Request, res: Response) => {
     try {
       console.log("generated message:", completion.choices[0].message.content);
 
-      let { foodName, calories, protein, carbs, fat } = JSON.parse(
-        completion.choices[0].message.content,
-      );
+      // Be sure of correct format
+      let foodData;
+      if (completion.choices[0].message.content.startsWith("`")) {
+        foodData = completion.choices[0].message.content.slice(3, -3);
+      } else {
+        foodData = completion.choices[0].message.content;
+      }
+
+      console.log("foodData:", foodData);
+
+      let { foodName, calories, protein, carbs, fat } = JSON.parse(foodData);
 
       // Round the values
       calories = Math.round(calories);
