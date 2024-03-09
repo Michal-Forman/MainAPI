@@ -5,6 +5,7 @@ import cors from "cors";
 import smartWeatherRouter from "./routes/smartWeather/router.js";
 import connectSmartDietTrackerDB from "./config/smartDietTracker/database.js";
 import smartDietTrackerRouter from "./routes/smartDietTracker/router.js";
+import mainRouter from "./routes/main/router.js";
 // Database connections
 connectSmartDietTrackerDB();
 const app = express();
@@ -14,6 +15,7 @@ app.use(cors());
 app.use(express.json());
 app.use("/api/smart-weather", smartWeatherRouter);
 app.use("/api/smart-diet-tracker", smartDietTrackerRouter);
+app.use("/", mainRouter);
 app.listen(port, () => {
     console.log(`Example app listening at port: ${port}`);
 });
